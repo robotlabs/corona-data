@@ -69,6 +69,38 @@ export const compare = (data, startDay) => {
       dataEnd: c.dataEnd
     })
   }
+  /*
+  const returnData = []
+  for (let i = 0; i < data.length; i++) {
+    const c = data[i]
+    const t = c.timeline
+    let percSum = 0
+
+    let steps = 0
+    for (let i = c.dataInit; i < c.dataEnd; i++) {
+      // if (i > startDay) {
+      const diff = t[i].confirmed - t[i - 1].confirmed
+      // console.log('DIFF :', diff, ' : WAS : ', t[i - 1].confirmed, ' : IS : ', t[i].confirmed)
+      const perc = (diff / t[i - 1].confirmed) * 100
+      // console.log('PERC ', perc)
+      if (!isNaN(perc) && isFinite(perc)) {
+        percSum = percSum + perc
+
+        steps++
+      }
+    }
+    // }
+    const totPerc = percSum / steps
+    returnData.push({
+      country: c.country,
+      countryName: c.country,
+      perc: totPerc,
+      timeline: t,
+      dataInit: c.dataInit,
+      dataEnd: c.dataEnd
+    })
+  }
+  */
   returnData.sort((a, b) => (a.perc > b.perc) ? 1 : -1)
 
   const c0 = data[0]
