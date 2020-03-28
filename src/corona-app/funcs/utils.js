@@ -16,9 +16,6 @@ const test2 = ['a']//, 'b']
 export const fetchData = async () => {
   // return new Promise((resolve, reject) => {
   const data = await fetchingData(URL_UK_ALL)
-  console.log('data', data)
-  // const dataUK = await fetchingData(URL_UK)
-  // data = [...data, ...dataUK]
   const newData = parseAll(data)
   return newData
 }
@@ -67,7 +64,9 @@ export const compare = (data, startDay) => {
       country: c.country,
       countryName: c.country,
       perc: totPerc,
-      timeline: t
+      timeline: t,
+      dataInit: c.dataInit,
+      dataEnd: c.dataEnd
     })
   }
   returnData.sort((a, b) => (a.perc > b.perc) ? 1 : -1)
@@ -200,50 +199,5 @@ const parseAllCountries = (data) => {
       return countryInfo
     })
     .entries(newData)
-  return countryKeys
-}
-const parseUK = (data) => {
-  console.log('DATA ', data)
-  var countryKeys = d3.nest()
-    .key(function (d) { return d.country_code })
-    .rollup(function (v) {
-      for (let i = 0; i < v.length; i++) {
-        console.log('v ', v)
-        if (v[i].province === 'United Kingdom') {
-          console.log('#####-----#####')
-          const timelines = {
-            confirmed: {
-              timeline: []
-            },
-            deaths: {
-              timeline: []
-            },
-            recovered: {
-              timeline: []
-            }
-          }
-          // add here the timeline conversion
-
-          const confirmedTimeline = Object.keys(v[i].timelines.confirmed.timeline)
-          const vOjb = v[i]
-          for (let i = 0; i < confirmedTimeline.length; i++) {
-            if (timelines.confirmed.timeline[i]) {
-              timelines.confirmed.timeline[i].value += vOjb.timelines.confirmed.timeline[confirmedTimeline[i]]
-            } else {
-              timelines.confirmed.timeline.push({
-                date: confirmedTimeline[i],
-                value: vOjb.timelines.confirmed.timeline[confirmedTimeline[i]]
-              })
-            }
-          }
-          console.log('GESU CRISTO ', timelines)
-          vOjb.timelines = timelines
-          return vOjb
-        }
-      }
-    })
-    .entries(data)
-
-  console.log('***** countryKeys', countryKeys)
   return countryKeys
 }

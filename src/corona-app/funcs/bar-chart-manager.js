@@ -114,7 +114,7 @@ export const barchartManager = (data, g, updateDataTime) => {
     })
 
   var dataTime = []
-  for (let i = 0; i < 14; i++) { // data[0].timeline.length; i++) {
+  for (let i = 0; i < data[0].timeline.length; i++) { // data[0].timeline.length; i++) {
     dataTime.push(new Date(data[0].timeline[i].date))
   }
   tempDateTime = dataTime
@@ -132,16 +132,15 @@ export const barchartManager = (data, g, updateDataTime) => {
     .enter()
     .append('svg')
     .attr('class', 'svg-test')
-    .attr('width', 500)
+    .attr('width', 1100)
     .attr('height', 100)
     .attr('class', 'sliderxxx')
     .append('g')
     .attr('transform', 'translate(30,0)')
     .each(function (d, i) {
-      d3.select(this).call(ttt(d, colorScale(i)), updateDataTime)
+      d3.select(this).call(ttt(d, colorScale(i), updateDataTime))
     })
     .attr('y', (d) => {
-      console.log('d', d)
       return (y(d.country) + 21) * 2
     })
     .attr('x', (d) => {
@@ -195,23 +194,22 @@ export const barchartManager = (data, g, updateDataTime) => {
 }
 
 function ttt (d, c, updateDataTime) {
+  console.log('d', d)
   return sliderBottom()
-    .min(d3.min(tempDateTime))
-    .max(tempDateTime[13])
+    .min(tempDateTime[d.dataInit])
+    .max(tempDateTime[tempDateTime.length - 1])
   // .step(1000 * 60 * 60 * 24)// * 365)
     .step(1)
-    .width(300)
+    .width(1000)
     .tickFormat(d3.timeFormat('%m-%d'))
     .tickValues(tempDateTime)
     .default(new Date(2020, 3, 3))
 
-    .default([tempDateTime[3], tempDateTime[7]])
+    .default([tempDateTime[d.dataInit], tempDateTime[d.dataEnd]])
     .fill((d, i) => {
       return c
     })
     .on('onchange', (val, w) => {
-      console.log('val ', val, this)
-      console.log('d ', d)
       d3.select('p#value-time').text((val.map(d3.timeFormat('%B %d, %Y')).join('-')))
     })
     .on('end', (val, w) => {

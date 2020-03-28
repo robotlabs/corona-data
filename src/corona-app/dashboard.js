@@ -19,11 +19,14 @@ class Dashboard extends Component {
 
   async componentDidMount () {
     const data = await fetchData()
-    // const dataUk = await fetchData(URL_UK)
+    for (let i = 0; i < data.length; i++) {
+      const c = data[i]
+      c.dataInit = 30// new Date(c.timeline[0].date)
+      c.dataEnd = c.timeline.length - 1// new Date(c.timeline[c.timeline.length - 1].date)
+    }
 
     iter = 44
     const compareData = compare(data, iter)
-    // console.log('DATA-UK', dataUk)
 
     const d3El = d3.select(this.node.current)
     const svg = d3El.append('svg')
@@ -50,22 +53,17 @@ class Dashboard extends Component {
     //       dateInitLabel: compareData.dateInitLabel,
     //       dateEndLabel: compareData.dateEndLabel
     //     })
-    //     console.log('compareData.dataInit', compareData.dateInit)
     //   }
     // }, 2000)
 
     setTimeout(() => {
       const l = data[0].timeline.length
-      if (iter < l - 2) {
-        iter++
-        const compareData = compare(data, iter)
-        barchartManager(compareData.data, this.g, this.updateDataTime)
-        this.setState({
-          dateInitLabel: compareData.dateInitLabel,
-          dateEndLabel: compareData.dateEndLabel
-        })
-        console.log('compareData.dataInit', compareData.dateInit)
-      }
+      const compareData = compare(data, iter)
+      barchartManager(compareData.data, this.g, this.updateDataTime)
+      this.setState({
+        dateInitLabel: compareData.dateInitLabel,
+        dateEndLabel: compareData.dateEndLabel
+      })
     }, 1000)
   }
 
