@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { sliderHorizontal, sliderBottom } from 'd3-simple-slider'
 let tempDateTime
-export const barchartManager = (data, g) => {
+export const barchartManager = (data, g, updateDataTime) => {
   const easeCubic = d3.easeCubic
   const w = window.innerWidth - 40
 
@@ -138,7 +138,7 @@ export const barchartManager = (data, g) => {
     .append('g')
     .attr('transform', 'translate(30,0)')
     .each(function (d, i) {
-      d3.select(this).call(ttt(d, colorScale(i)))
+      d3.select(this).call(ttt(d, colorScale(i)), updateDataTime)
     })
     .attr('y', (d) => {
       console.log('d', d)
@@ -194,7 +194,7 @@ export const barchartManager = (data, g) => {
     })
 }
 
-function ttt (d, c) {
+function ttt (d, c, updateDataTime) {
   return sliderBottom()
     .min(d3.min(tempDateTime))
     .max(tempDateTime[13])
@@ -213,5 +213,10 @@ function ttt (d, c) {
       console.log('val ', val, this)
       console.log('d ', d)
       d3.select('p#value-time').text((val.map(d3.timeFormat('%B %d, %Y')).join('-')))
+    })
+    .on('end', (val, w) => {
+      console.log('val ', val, this)
+      console.log('d ', d)
+      updateDataTime(d)
     })
 }

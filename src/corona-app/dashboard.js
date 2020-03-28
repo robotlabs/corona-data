@@ -34,7 +34,7 @@ class Dashboard extends Component {
 
     this.g = g
 
-    barchartManager(compareData.data, this.g)
+    barchartManager(compareData.data, this.g, this.updateDataTime)
     this.setState({
       dataInit: compareData.dataInit,
       dataInitLabel: compareData.dataInitLabel
@@ -59,7 +59,7 @@ class Dashboard extends Component {
       if (iter < l - 2) {
         iter++
         const compareData = compare(data, iter)
-        barchartManager(compareData.data, this.g)
+        barchartManager(compareData.data, this.g, this.updateDataTime)
         this.setState({
           dateInitLabel: compareData.dateInitLabel,
           dateEndLabel: compareData.dateEndLabel
@@ -67,6 +67,10 @@ class Dashboard extends Component {
         console.log('compareData.dataInit', compareData.dateInit)
       }
     }, 1000)
+  }
+
+  updateDataTime (dataTime) {
+    console.log('::: DATA TIME', dataTime)
   }
 
   render () {
