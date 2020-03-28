@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { sliderHorizontal, sliderBottom } from 'd3-simple-slider'
 let tempDateTime
-export const barchartManager = (data, g) => {
+export const barchartManager = (data, g, updateDataTime) => {
   const easeCubic = d3.easeCubic
   const w = window.innerWidth - 40
 
@@ -114,7 +114,7 @@ export const barchartManager = (data, g) => {
     })
 
   var dataTime = []
-  for (let i = 0; i < 14; i++) { // data[0].timeline.length; i++) {
+  for (let i = 0; i < data[0].timeline.length; i++) { // data[0].timeline.length; i++) {
     dataTime.push(new Date(data[0].timeline[i].date))
   }
   tempDateTime = dataTime
@@ -124,6 +124,7 @@ export const barchartManager = (data, g) => {
     .data(data, function (d) {
       return d.countryName
     })
+
   //* * REMOVE
   inputsliders.exit()
     .remove()
@@ -138,10 +139,9 @@ export const barchartManager = (data, g) => {
     .append('g')
     .attr('transform', 'translate(30,0)')
     .each(function (d, i) {
-      d3.select(this).call(ttt(d, colorScale(i)))
+      d3.select(this).call(ttt(d, colorScale(i), updateDataTime, i))
     })
     .attr('y', (d) => {
-      console.log('d', d)
       return (y(d.country) + 21) * 2
     })
     .attr('x', (d) => {
@@ -194,24 +194,29 @@ export const barchartManager = (data, g) => {
     })
 }
 
-function ttt (d, c) {
+function ttt (d, c, updateDataTime, i) {
+  console.log('D', d.dataInit, tempDateTime)
   return sliderBottom()
-    .min(d3.min(tempDateTime))
-    .max(tempDateTime[13])
+    .min(tempDateTime[0])
+    .max(tempDateTime[14])
   // .step(1000 * 60 * 60 * 24)// * 365)
     .step(1)
     .width(300)
     .tickFormat(d3.timeFormat('%m-%d'))
     .tickValues(tempDateTime)
-    .default(new Date(2020, 3, 3))
+    // .default(new Date(2020, 3, 3))
 
     .default([tempDateTime[3], tempDateTime[7]])
     .fill((d, i) => {
       return c
     })
     .on('onchange', (val, w) => {
-      console.log('val ', val, this)
-      console.log('d ', d)
       d3.select('p#value-time').text((val.map(d3.timeFormat('%B %d, %Y')).join('-')))
+    })
+    .on('end', (val, w) => {
+      // console.log(':::end val ', val, this)
+      // console.log(':::ned d ', d, tempDateTime, tempDateTime.indexOf(val[0]), val[0])
+      d.i = i
+      updateDataTime(d)
     })
 }

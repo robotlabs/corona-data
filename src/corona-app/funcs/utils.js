@@ -16,7 +16,6 @@ const test2 = ['a']//, 'b']
 export const fetchData = async () => {
   // return new Promise((resolve, reject) => {
   const data = await fetchingData(URL_UK_ALL)
-  console.log('data', data)
   // const dataUK = await fetchingData(URL_UK)
   // data = [...data, ...dataUK]
   const newData = parseAll(data)
@@ -43,31 +42,31 @@ export const compare = (data, startDay) => {
   const returnData = []
   for (let i = 0; i < data.length; i++) {
     const c = data[i]
-    const test = new Date('2020-3-7')
     const t = c.timeline
     let percSum = 0
-    const initDay = startDay
 
     let steps = 0
-    for (let i = 0; i < t.length; i++) {
-      if (i > initDay) {
-        const diff = t[i].confirmed - t[i - 1].confirmed
-        // console.log('DIFF :', diff, ' : WAS : ', t[i - 1].confirmed, ' : IS : ', t[i].confirmed)
-        const perc = (diff / t[i - 1].confirmed) * 100
-        // console.log('PERC ', perc)
-        if (!isNaN(perc) && isFinite(perc)) {
-          percSum = percSum + perc
+    for (let i = c.dataInit; i < c.dataEnd; i++) {
+      // if (i > startDay) {
+      const diff = t[i].confirmed - t[i - 1].confirmed
+      // console.log('DIFF :', diff, ' : WAS : ', t[i - 1].confirmed, ' : IS : ', t[i].confirmed)
+      const perc = (diff / t[i - 1].confirmed) * 100
+      // console.log('PERC ', perc)
+      if (!isNaN(perc) && isFinite(perc)) {
+        percSum = percSum + perc
 
-          steps++
-        }
+        steps++
       }
     }
+    // }
     const totPerc = percSum / steps
     returnData.push({
       country: c.country,
       countryName: c.country,
       perc: totPerc,
-      timeline: t
+      timeline: t,
+      dataInit: c.dataInit,
+      dataEnd: c.dataEnd
     })
   }
   returnData.sort((a, b) => (a.perc > b.perc) ? 1 : -1)
@@ -203,14 +202,11 @@ const parseAllCountries = (data) => {
   return countryKeys
 }
 const parseUK = (data) => {
-  console.log('DATA ', data)
   var countryKeys = d3.nest()
     .key(function (d) { return d.country_code })
     .rollup(function (v) {
       for (let i = 0; i < v.length; i++) {
-        console.log('v ', v)
         if (v[i].province === 'United Kingdom') {
-          console.log('#####-----#####')
           const timelines = {
             confirmed: {
               timeline: []
@@ -236,7 +232,6 @@ const parseUK = (data) => {
               })
             }
           }
-          console.log('GESU CRISTO ', timelines)
           vOjb.timelines = timelines
           return vOjb
         }
@@ -244,6 +239,5 @@ const parseUK = (data) => {
     })
     .entries(data)
 
-  console.log('***** countryKeys', countryKeys)
   return countryKeys
 }
