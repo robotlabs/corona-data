@@ -1,7 +1,9 @@
 
 import * as d3 from 'd3'
-const countryCodes = ['IT', 'ES', 'DE', 'NL', 'FR', 'US', 'IR', 'KR', 'CH', 'BE', 'AT', 'GB']
-const countryNames = ['Italy', 'Spain', 'Germany', 'Netherlands', 'France', 'US', 'Iran', 'Korea, South', 'Switzerland', 'Belgium', 'Austria', 'United Kingdom']
+// const countryCodes = ['IT', 'ES', 'DE', 'NL', 'FR', 'US', 'IR', 'KR', 'CH', 'BE', 'AT', 'GB']
+const countryCodes = ['IT', 'ES', 'DE', 'NL', 'FR', 'US', 'KR', 'BE', 'AT', 'GB']
+// const countryNames = ['Italy', 'Spain', 'Germany', 'Netherlands', 'France', 'US', 'Iran', 'Korea, South', 'Switzerland', 'Belgium', 'Austria', 'United Kingdom']
+const countryNames = ['Italy', 'Spain', 'Germany', 'Netherlands', 'France', 'US', 'Korea, South', 'Belgium', 'Austria', 'United Kingdom']
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
@@ -40,14 +42,13 @@ export const compare = (data, startDay) => {
   const returnData = []
   for (let i = 0; i < data.length; i++) {
     const c = data[i]
-    const test = new Date('2020-3-7')
     const t = c.timeline
     let percSum = 0
-    const initDay = startDay
 
     let steps = 0
+    // for (let i = c.dataInit; i < c.dataEnd; i++) {
     for (let i = 0; i < t.length; i++) {
-      if (i > initDay) {
+      if (i > c.dataInit && i < c.dataEnd) {
         const diff = t[i].confirmed - t[i - 1].confirmed
         // console.log('DIFF :', diff, ' : WAS : ', t[i - 1].confirmed, ' : IS : ', t[i].confirmed)
         const perc = (diff / t[i - 1].confirmed) * 100
@@ -60,6 +61,7 @@ export const compare = (data, startDay) => {
       }
     }
     const totPerc = percSum / steps
+
     returnData.push({
       country: c.country,
       countryName: c.country,
@@ -69,50 +71,21 @@ export const compare = (data, startDay) => {
       dataEnd: c.dataEnd
     })
   }
-  /*
-  const returnData = []
-  for (let i = 0; i < data.length; i++) {
-    const c = data[i]
-    const t = c.timeline
-    let percSum = 0
 
-    let steps = 0
-    for (let i = c.dataInit; i < c.dataEnd; i++) {
-      // if (i > startDay) {
-      const diff = t[i].confirmed - t[i - 1].confirmed
-      // console.log('DIFF :', diff, ' : WAS : ', t[i - 1].confirmed, ' : IS : ', t[i].confirmed)
-      const perc = (diff / t[i - 1].confirmed) * 100
-      // console.log('PERC ', perc)
-      if (!isNaN(perc) && isFinite(perc)) {
-        percSum = percSum + perc
-
-        steps++
-      }
-    }
-    // }
-    const totPerc = percSum / steps
-    returnData.push({
-      country: c.country,
-      countryName: c.country,
-      perc: totPerc,
-      timeline: t,
-      dataInit: c.dataInit,
-      dataEnd: c.dataEnd
-    })
-  }
-  */
   returnData.sort((a, b) => (a.perc > b.perc) ? 1 : -1)
 
   const c0 = data[0]
-  const endDay = c0.timeline.length - 1
-  const startDate = new Date(c0.timeline[startDay].date)
-  const endDate = new Date(c0.timeline[endDay].date)
+  console.log('a')
+  console.log(c0.timeline[0].date)
+  // var myDate1 = Date.parseExact(c0.timeline[0].date, 'yyyy-MM-dd')
+  // console.log('myDate1 ', myDate1)
+  console.log(new Date(c0.timeline[0].date))
+  const startDate = new Date(c0.timeline[0].date.replace(/-/g, '/'))
+  console.log('startDate', startDate, c0.timeline[0])
   return {
     data: returnData,
-    dateInit: c0.timeline[startDay].date,
-    dateEnd: c0.timeline[endDay].date,
-    dateInitLabel: monthNames[startDate.getMonth()] + ' ' + startDate.getDate(),
-    dateEndLabel: monthNames[endDate.getMonth()] + ' ' + endDate.getDate()
+    dateInit: c0.timeline[0].date,
+    dateInitLabel: monthNames[startDate.getMonth()] + ' ' + startDate.getDate()
   }
 }
 const parseAll = (data) => {

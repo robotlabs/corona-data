@@ -21,10 +21,17 @@ class Dashboard extends Component {
     const data = await fetchData()
     for (let i = 0; i < data.length; i++) {
       const c = data[i]
-      c.dataInit = 30// new Date(c.timeline[0].date)
+      const newTimeline = []
+      for (let i = 0; i < c.timeline.length; i++) {
+        if (i >= 36) {
+          newTimeline.push(c.timeline[i])
+        }
+      }
+      c.timeline = newTimeline
+
+      c.dataInit = c.timeline.length - 5
       c.dataEnd = c.timeline.length - 1// new Date(c.timeline[c.timeline.length - 1].date)
     }
-
     iter = 44
     const compareData = compare(data, iter)
 
@@ -65,10 +72,22 @@ class Dashboard extends Component {
         dateEndLabel: compareData.dateEndLabel
       })
     }, 1000)
+
+    this.data = data
   }
 
-  updateDataTime (dataTime) {
-    console.log('::: DATA TIME', dataTime)
+  updateDataTime = (dataTime) => {
+    for (let i = 0; i < this.data.length; i++) {
+      const c = this.data[i]
+      if (c.country === dataTime.countryInfo.country) {
+        this.data[i].dataInit = dataTime.dateInit
+        this.data[i].dataEnd = dataTime.dateEnd
+      }
+    }
+
+    const compareData = compare(this.data, 0)
+    console.log('+++ ', compareData)
+    barchartManager(compareData.data, this.g, this.updateDataTime)
   }
 
   render () {
@@ -79,12 +98,12 @@ class Dashboard extends Component {
           className='box'
           ref={this.node}
         />
-        <div className='date'>
+        {/* <div className='date'>
           <div>init: {dateInitLabel}</div>
           <div>end: {dateEndLabel}</div>
-        </div>
-        {/* <div className='sliderx' id='slider' />
-        <div className='sliderx' id='slider-range' /> */}
+        </div> */}
+        <div className='sliderx' id='slider' />
+        <div className='sliderx' id='slider-range' />
         <div className='row align-items-center sliderx'>
           <div className='col-sm-2'><p id='value-time' /></div>
           <div className='col-sm'><div id='slider-time' /></div>
